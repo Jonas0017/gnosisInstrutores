@@ -28,6 +28,18 @@ export default {
     plugins: [
       "expo-router",
       [
+        "expo-build-properties",
+        {
+          android: {
+            kotlinVersion: "1.9.10",
+            gradlePluginVersion: "8.0.2",
+            compileSdkVersion: 34,
+            targetSdkVersion: 34,
+            minSdkVersion: 23
+          }
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           image: "./assets/images/splash-icon.png",
