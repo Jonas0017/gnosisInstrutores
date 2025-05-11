@@ -1,6 +1,6 @@
 {
   "name": "instrutores",
-  "main": "expo-router/entry",
+  "main": "index.js",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
@@ -15,6 +15,8 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo/config-plugins": "~9.0.0",
+    "@expo/metro-config": "~0.19.0",
     "@expo/react-native-action-sheet": "^4.1.0",
     "@expo/vector-icons": "^14.0.2",
     "@lottiefiles/dotlottie-react": "^0.6.5",
@@ -34,17 +36,21 @@
     "expo-haptics": "~14.0.0",
     "expo-linking": "~7.0.3",
     "expo-local-authentication": "~15.0.2",
-    "expo-router": "~4.0.15",
+    "expo-modules-autolinking": "~2.0.0",
+    "expo-router": "^5.0.6",
     "expo-splash-screen": "~0.29.18",
     "expo-status-bar": "~2.0.0",
     "expo-symbols": "~0.2.0",
     "expo-system-ui": "~4.0.6",
     "expo-web-browser": "~14.0.1",
     "firebase": "^11.1.0",
-    "lottie-react-native": "^7.2.1",
+    "lottie-react-native": "7.1.0",
+    "metro": "^0.81.0",
+    "metro-config": "^0.82.3",
+    "metro-resolver": "^0.82.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.5",
+    "react-native": "0.76.9",
     "react-native-app-intro-slider": "^4.0.4",
     "react-native-copilot": "^3.3.3",
     "react-native-gesture-handler": "~2.20.2",
@@ -52,10 +58,10 @@
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
-    "react-native-svg": "^15.11.2",
+    "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "rn-tourguide": "^3.3.2",
+    "rn-tourguide": "file:./packages/rn-tourguide",
     "world-countries": "^5.0.0"
   },
   "devDependencies": {
@@ -65,6 +71,8 @@
     "@types/react-test-renderer": "^18.3.0",
     "jest": "^29.2.1",
     "jest-expo": "~52.0.2",
+    "patch-package": "^8.0.0",
+    "postinstall-postinstall": "^2.1.0",
     "react-test-renderer": "18.3.1",
     "typescript": "^5.3.3"
   },

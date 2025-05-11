@@ -14,7 +14,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { doc, setDoc } from "firebase/firestore";
-import { firestore } from "../firebaseConfig";
+import { firestore } from "../firebaseConfig.js";
 import { globalStyles } from "../styles/globalStyles";
 import Loading from "../components/Loading";
 import { MaterialIcons } from "@expo/vector-icons"; // Ícones para mostrar/ocultar senha

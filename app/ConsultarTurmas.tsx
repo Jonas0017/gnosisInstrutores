@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { firestore } from "../firebaseConfig";
+import { firestore } from "../firebaseConfig.js";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { globalStyles } from "../styles/globalStyles";
 import { recuperarDadosDemograficos } from "../utils/dadosDemograficos";
@@ -34,20 +34,96 @@ const ConsultarTurmas = () => {
   const [CPF, setCpf] = useState(""); // Recupando dados parao carregamento do perfil
   const [loading, setLoading] = useState(false);
   // Inicio do código tutorial
-  //const { start, canStart } = useTourGuideController(); // 🔥 Pegamos o `eventEmitter`
   const [tutorialEtapa, setTutorialEtapa] = useState(1); // Estado para controlar a etapa
-  const { start, eventEmitter, canStart } = useTourGuideController();
+  //const { start, eventEmitter, canStart, stop } = useTourGuideController();
 
-  //  const { start, canStart } = useTourGuideController(); // ✅ Obtém o controle do tour
+  const {
+    start: startGeral,
+    stop: stopGeral,
+    canStart: canStartGeral,
+    eventEmitter: emitterGeral,
+    TourGuideZone: GeralZone,
+  } = useTourGuideController("Geral");
+
+  const {
+    start: startInstrutor,
+    stop: stopInstrutor,
+    canStart: canStartInstrutor,
+    eventEmitter: emitterInstrutor,
+    TourGuideZone: InstrutorZone,
+  } = useTourGuideController("Instrutor");
+  //console.log("🧪 useTourGuideController('Instrutor') -> canStart:", canStartInstrutor);
+
+  const {
+    start: startAno,
+    stop: stopAno,
+    canStart: canStartAno,
+    eventEmitter: emitterAno,
+    TourGuideZone: AnoZone,
+  } = useTourGuideController("Ano");
+
+  const {
+    start: startTurma,
+    stop: stopTurma,
+    canStart: canStartTurma,
+    eventEmitter: emitterTurma,
+    TourGuideZone: TurmaZone,
+  } = useTourGuideController("Turma");
+
+  const {
+    start: startPerfil,
+    stop: stopPerfil,
+    canStart: canStartPerfil,
+    eventEmitter: emitterPerfil,
+    TourGuideZone: PerfilZone,
+  } = useTourGuideController("Perfil");
+
+  const handleOnStart = () => console.log('start')
+  const handleOnStop = () => console.log('stop')
+  const handleOnStepChange = () => console.log(`stepChange`)
+
+  React.useEffect(() => {
+  const emissores = [
+    emitterGeral,
+    emitterInstrutor,
+    emitterAno,
+    emitterTurma,
+    emitterPerfil,
+  ];
+
+  for (const emitter of emissores) {
+    if (!emitter) continue;
+
+    emitter.on('start', handleOnStart);
+    emitter.on('stop', handleOnStop);
+    emitter.on('stepChange', handleOnStepChange);
+  }
+
+  return () => {
+    for (const emitter of emissores) {
+      if (!emitter) continue;
+
+      emitter.off('start', handleOnStart);
+      emitter.off('stop', handleOnStop);
+      emitter.off('stepChange', handleOnStepChange);
+    }
+  };
+}, [
+  emitterGeral,
+  emitterInstrutor,
+  emitterAno,
+  emitterTurma,
+  emitterPerfil,
+]);
+
+
   const homeRef = useRef(null);
   const configRef = useRef(null);
   const listaRef = useRef(null);
   const addRef = useRef(null);
+
   //AsyncStorage.removeItem("tutorialCompleted");
   //AsyncStorage.setItem("tutorialCompleted", "false");
-
-
-  // fim do código tutorial
 
   const fetchTurmas = async () => {
     try {
@@ -102,67 +178,110 @@ const ConsultarTurmas = () => {
     fetchTurmas();
   }, []);
 
-  // Iniciando tutorial
-  useEffect(() => {
-    const checkIfTutorialSeen = async () => {
-      const etapaSalva = await AsyncStorage.getItem("tutorialEtapa");
-  
-      if (etapaSalva) {
-        setTutorialEtapa(parseInt(etapaSalva, 10)); // 🔥 Recupera a última etapa salva
-      }
-  
-      if (!etapaSalva && canStart && anoSelecionado === null) {
-        console.log("📢 Iniciando tutorial da etapa:", etapaSalva);
-        
-        setTimeout(() => {
-          start(parseInt(etapaSalva ?? "1", 10)); // 🔥 Usa o valor salvo, ou começa da etapa 1
-        }, 500); // 🔥 Delay maior para evitar que rode antes da renderização completa
-      }
+  /////////////////////////////////////////////////////////////////////////////////////
+  //////////////////// Iniciando tutorial     /////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////
 
-    };
-    //AsyncStorage.setItem("tutorialEtapa", "1".toString()); // 🔥 Salva o progresso do tutorial
-    setTimeout(() => {
-      //start(); // 🔥 Usa o valor salvo, ou começa da etapa 1
-    }, 500);
-    checkIfTutorialSeen();
-  }, [canStart, anoSelecionado]);
-  
-  // 🔹 Usa um useEffect para iniciar o tutorial na etapa correta após atualizar o estado
-  useEffect(() => {
-    if (tutorialEtapa > 1 && canStart) {
-      console.log("✅ Tutorial avançando para a etapa:", tutorialEtapa);
-  
-      setTimeout(() => {
-        console.log("🚀 Chamando start() com tutorialEtapa:", tutorialEtapa);
-        start(tutorialEtapa);
-      }, 500); // 🔥 Delay maior para garantir que o tutorial inicia no tempo certo
+  ///////////  Geral Inicia automaticamente quando abre o app
+
+  const [tutorialEtapaGeral, setTutorialEtapaGeral] = useState(1)
+
+  const checkIfGeralTutorialSeen = async () => {
+    try {
+      stopGeral()
+
+      const concluido = await AsyncStorage.getItem("tutorialGeralCompleted");
+      const etapa = parseInt(await AsyncStorage.getItem("tutorialGeralEtapa") ?? "1", 10);
+      setTutorialEtapaGeral(etapa);
+
+      const etapaValida = etapa >= 1 && etapa <= 4;
+
+      if (concluido !== "true" && etapaValida) {
+        const esperaCanStart = setInterval(() => {
+          if (canStartGeral) {
+            clearInterval(esperaCanStart);
+            console.log("✅ Tutorial GERAL pronto para iniciar, etapa:", etapa);
+            startGeral();
+            setTimeout(() => startGeral(etapa), 100);
+          } else {
+            //console.log("⏳ Aguardando canStartGeral ficar true...");
+          }
+        }, 300);
+      } else {
+        console.log(
+          concluido === "true"
+            ? "Tutorial GERAL já foi concluído."
+            : `⛔ Etapa ${etapa} inválida ou não iniciada.`
+        );
+      }
+    } catch (error) {
+      console.error("❌ Erro ao verificar tutorial GERAL:", error)
     }
-  }, [tutorialEtapa, canStart]);
-  
+  }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      checkIfGeralTutorialSeen();
+    }, 200); // Ajuste conforme necessário
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+
   // 🔹 Reinicia o tutorial ao selecionar um instrutor, mas continua na parte correta
-  const handleInstrutorSelecionado = (instrutor: string) => {
+  const handleInstrutorSelecionado = async (instrutor: string) => {
+    stopInstrutor();
     setInstrutorSelecionado(instrutor);
     console.log("👨‍🏫 Instrutor selecionado:", instrutor);
-  
-    if (tutorialEtapa < 5 && canStart) {
-      const novaEtapa = 5;
-      AsyncStorage.setItem("tutorialEtapa", "5".toString()); // 🔥 Salva o progresso do tutorial
-      setTutorialEtapa(novaEtapa);
-    }
+
+    const novaEtapa = 1;
+    await AsyncStorage.setItem("tutorialInstrutorEtapa", novaEtapa.toString());
+    await AsyncStorage.setItem("tutorialInstrutorCompleted", "false");
+    setTutorialEtapa(novaEtapa);
+
+    // Aguarda o próximo render para garantir que o zone foi montado
+    setTimeout(() => {
+      let tentativas = 0;
+
+      const tentarStart = () => {
+        if (canStartInstrutor) {
+          console.log("✅ canStartInstrutor = true, iniciando");
+          startInstrutor();
+          setTimeout(() => startInstrutor(novaEtapa), 100);
+        } else if (tentativas < 10) {
+          console.log("⏳ Aguardando canStartInstrutor...");
+          tentativas++;
+          setTimeout(tentarStart, 300);
+        } else {
+          console.warn("❌ Timeout: canStartInstrutor ainda false.");
+        }
+      };
+
+      tentarStart();
+    }, 300); // aguarda a renderização com instrutorSelecionado atualizado
   };
-  
-  // 🔹 Reinicia o tutorial ao selecionar um ano, mas continua na parte correta
-  const handleAnoSelecionado = (ano: string) => {
+
+
+  const handleAnoSelecionado = async (ano: string) => {
+    stopAno(); // Garante que o tutorial "Ano" está limpo
+
     setAnoSelecionado(ano);
     console.log("📅 Ano selecionado:", ano);
-  
-    if (tutorialEtapa < 6 && canStart) {
-      const novaEtapa = 6;
-      AsyncStorage.setItem("tutorialEtapa", "6".toString()); // 🔥 Salva o progresso do tutorial
-      setTutorialEtapa(novaEtapa);
+
+    const novaEtapa = 1; // ou 6, conforme seu fluxo geral
+    await AsyncStorage.setItem("tutorialAnoEtapa", novaEtapa.toString());
+    await AsyncStorage.setItem("tutorialAnoCompleted", "false");
+    setTutorialEtapa(novaEtapa);
+    setTimeout(() => {
+      startAno();
+    }, 200);
+    if (canStartAno) {
+      console.log("✅ Iniciando tutorial ANO na etapa:", novaEtapa);
+      setTimeout(() => startAno(novaEtapa), 100);
+    } else {
+      console.warn("⚠️ Tutorial ANO não pôde ser iniciado: canStart = false");
     }
-  };  
-  
+  };
 
   // Função para deletar turma
   const removerTurma = async (id: string) => {
@@ -200,7 +319,6 @@ const ConsultarTurmas = () => {
     );
   };
 
-
   // Função para remover todas as subcoleções antes de excluir a turma
   const removerSubcolecoes = async (caminhoFirestore: string) => {
     const colecoes = ["alunos", "palestras"]; // Subcoleções dentro de turmas
@@ -211,6 +329,62 @@ const ConsultarTurmas = () => {
         deleteDoc(doc(firestore, `${caminhoFirestore}/${colecao}`, docSnap.id))
       );
       await Promise.all(deletarDocumentos); // Aguarda a exclusão de todas as subcoleções
+    }
+  };
+  const resetarTutorial = async () => {
+    console.log("🔄 [RESET] Iniciando reset completo de TODOS os tutoriais...");
+
+    try {
+      // 🔸 Parar todos os tutoriais
+      stopGeral();
+      stopInstrutor();
+      stopAno();
+      stopPerfil();
+      stopTurma();
+
+      // 🔸 Limpar estados visuais
+      setInstrutorSelecionado(null);
+      setAnoSelecionado(null);
+
+      const novaEtapa = 1;
+
+      // 🔸 Lista de chaves a remover/resetar
+      const chaves = [
+        "tutorialCompleted",
+        "tutorialEtapa",
+        "tutorialGeralCompleted",
+        "tutorialGeralEtapa",
+        "tutorialInstrutorCompleted",
+        "tutorialInstrutorEtapa",
+        "tutorialAnoCompleted",
+        "tutorialAnoEtapa",
+        "tutorialPerfilCompleted",
+        "tutorialPerfilEtapa",
+        "tutorialTurmaCompleted",
+        "tutorialTurmaEtapa",
+      ];
+
+      // 🔸 Remove cada chave
+      await Promise.all(chaves.map((chave) => AsyncStorage.removeItem(chave)));
+
+      // 🔸 Atualiza estado local principal
+      setTutorialEtapa(novaEtapa);
+
+      setTimeout(() => {
+        startGeral();
+      }, 200);
+
+      // 🔸 Inicia tutorial geral como padrão após reset (opcional)
+      if (canStartGeral) {
+        console.log("🚀 [RESET] Iniciando tutorial GERAL na etapa:", novaEtapa);
+
+        setTimeout(() => startGeral(1), 100);
+      } else {
+        console.warn("⚠️ [RESET] Tutorial GERAL não pôde ser iniciado: canStartGeral = false");
+      }
+
+    } catch (err) {
+      console.error("❌ [RESET] Erro durante reset completo dos tutoriais:", err);
     }
   };
 
@@ -271,30 +445,46 @@ const ConsultarTurmas = () => {
           <View style={globalStyles.headerContainer}>
             {/* Tutorial no botão Home */}
 
-            <TourGuideZone zone={1} text="Aqui você volta para a tela inicial, onde poderá selecionar o Instrutor resposável pela turma!" shape={'circle'}
+            <GeralZone zone={1} text="Aqui você volta para a tela inicial, onde poderá selecionar o Instrutor resposável pela turma!" shape={'circle'}
               style={{}}>
-              <TouchableOpacity ref={homeRef} onPress={() => router.push("/ConsultarTurmas")} style={{ padding: 0, marginBottom: 32, }}>
+              <TouchableOpacity
+                onLayout={() => {
+                  console.log("✅ zone 1 montado");
+                  startGeral(1);
+                }}
+                ref={homeRef} onPress={() => router.push("/ConsultarTurmas")} style={{ padding: 0, marginBottom: 32, }}>
                 <MaterialIcons name="home" size={28} style={globalStyles.iconHome} />
               </TouchableOpacity>
-            </TourGuideZone>
+            </GeralZone>
             <Text style={globalStyles.titleTurma}>GNOSIS {Pais}</Text>
-            <TourGuideZone zone={2} text="Nessa engrenagem você pode visualizar e editar seus dados pessoais e demográficos." shape={'circle'} style={{}}>
-              <TouchableOpacity ref={configRef}
-                onPress={() => router.push({
-                  pathname: "/PerfilUsuario",
-                  params: {
-                    cpf: CPF
-                  },
-                })
-                }>
+            <GeralZone zone={2} text="Nessa engrenagem você pode visualizar e editar seus dados pessoais e demográficos." shape={'circle'} style={{}}>
+              <TouchableOpacity
+                ref={configRef}
+                onPress={async () => {
+
+                  const novaEtapa = 1;
+
+                  await AsyncStorage.setItem("tutorialPerfilEtapa", novaEtapa.toString());
+                  await AsyncStorage.setItem("tutorialPerfilCompleted", "false");
+                  setTutorialEtapa(novaEtapa);
+
+                  console.log("⚙️ Navegando para PerfilUsuario com etapa:", novaEtapa);
+
+                  router.push({
+                    pathname: "/PerfilUsuario",
+                    params: { cpf: CPF },
+                  });
+                }}
+              >
+
                 <MaterialIcons name="settings" size={28} style={globalStyles.iconSettings} />
               </TouchableOpacity>
-            </TourGuideZone>
+            </GeralZone>
           </View>
 
           {/* Lista de instrutores */}
           {!instrutorSelecionado && (
-            <TourGuideZone zone={3} text="As turmas estão organizadas por instrutor." borderRadius={10} style={{ marginTop: 20, padding: 10, paddingTop: 0, paddingBottom: 60, }}>
+            <GeralZone zone={3} text="As turmas estão organizadas por instrutor." borderRadius={10} style={{ marginTop: 20, padding: 10, paddingTop: 0, paddingBottom: 60, }}>
               <FlatList
                 data={instrutores}
                 keyExtractor={(item) => item}
@@ -310,14 +500,14 @@ const ConsultarTurmas = () => {
                 refreshing={loading} // Adiciona a função de atualização
                 onRefresh={fetchTurmas} // Recarrega os dados ao puxar para baixo
               />
-            </TourGuideZone>
+            </GeralZone>
 
           )}
 
           {/* Lista de anos */}
           {instrutorSelecionado && !anoSelecionado && (
 
-            <TourGuideZone zone={5} text="Selecionando o ano poderá visualizar as turmas." borderRadius={10} style={{ marginTop: 20, padding: 10, paddingTop: 0, paddingBottom: 60, }}>
+            <InstrutorZone zone={1} text="Selecionando o ano poderá visualizar as turmas." borderRadius={10} style={{ marginTop: 20, padding: 10, paddingTop: 0, paddingBottom: 60, }}>
               <FlatList
                 data={anosPorInstrutor[instrutorSelecionado] || []}
                 keyExtractor={(item) => item}
@@ -333,14 +523,14 @@ const ConsultarTurmas = () => {
                 refreshing={loading}
                 onRefresh={fetchTurmas}
               />
-            </TourGuideZone>
+            </InstrutorZone>
           )}
 
           {/* Lista de turmas */}
           {anoSelecionado && (
-            <TourGuideZone zone={6} text={"Finalmente podemos visualizar a turma selecionada! ❤️\n\nUm toque simples sobre a turma te permite visualizar os alunos.\n\nUm toque longo sobre a turma te permite alterar ou remover a turma selecionada."}
+            <AnoZone zone={1} text={"Finalmente podemos visualizar a turma selecionada! ❤️\n\nUm toque simples sobre a turma te permite visualizar os alunos.\n\nUm toque longo sobre a turma te permite alterar ou remover a turma selecionada."}
 
-               borderRadius={10} style={{ marginTop: 20, padding: 10, paddingTop: 0, paddingBottom: 60, }}>
+              borderRadius={10} style={{ marginTop: 20, padding: 10, paddingTop: 0, paddingBottom: 60, }}>
 
               <FlatList
                 data={turmasPorAno[instrutorSelecionado ?? "Instrutor"]?.[anoSelecionado ?? "Ano"] || []}
@@ -365,7 +555,7 @@ const ConsultarTurmas = () => {
                 refreshing={loading}
                 onRefresh={fetchTurmas}
               />
-            </TourGuideZone>
+            </AnoZone>
 
           )}
           {(instrutorSelecionado || anoSelecionado) && (
@@ -380,17 +570,20 @@ const ConsultarTurmas = () => {
 
           {/* 🔹 Botão para adicionar nova turma 🔹 */}
           <View style={{ position: "absolute", bottom: 1, right: 1, }}>
-            <TourGuideZone zone={4} text="Você pode adicionar uma nova turma pressionando o botão mais." shape={'circle'} style={{
+            <GeralZone zone={4} text="Você pode adicionar uma nova turma pressionando o botão mais." shape={'circle'} style={{
               padding: 30, bottom: 0,
               right: 10, marginLeft: 1
             }} >
               <TouchableOpacity ref={addRef} style={globalStyles.addButton} onPress={adicionarNovaTurma}>
                 <AntDesign name="plus" size={24} color="#ecf0f1" />
               </TouchableOpacity>
-            </TourGuideZone>
+            </GeralZone>
           </View>
         </>
       )}
+      <TouchableOpacity onPress={resetarTutorial} style={{ padding: 10, backgroundColor: '#ccc', margin: 10 }}>
+        <Text>Reiniciar Tutorial</Text>
+      </TouchableOpacity>
 
     </View>
   );

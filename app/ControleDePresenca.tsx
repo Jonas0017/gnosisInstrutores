@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import { firestore } from "../firebaseConfig";
+import { firestore } from "../firebaseConfig.js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { globalStyles } from "../styles/globalStyles";
@@ -31,6 +31,7 @@ import { ModalDetalhesAluno, ModalOpcoesAluno } from "../components/ModalAluno";
 import { getGreeting, getResumo, getMotivacao } from "../utils/whatsappMessages";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTourGuideController, TourGuideZone } from "rn-tourguide";
 
 // Interfaces
 interface Aluno {
@@ -50,6 +51,17 @@ interface Palestra {
 }
 
 const ControleDePresenca = () => {
+
+  const addRef = useRef(null);
+
+  const {
+    start: startTurma,
+    stop: stopTurma,
+    canStart: canStartTurma,
+    eventEmitter: emitterTurma,
+    TourGuideZone: TurmaZone,
+  } = useTourGuideController("Turma");
+
   const router = useRouter();
   const { turmaId } = useLocalSearchParams();
   const turmaIdStr = turmaId as string;
@@ -469,7 +481,7 @@ const ControleDePresenca = () => {
     const codigoPaisFormatado = codigoPais?.replace(/\D/g, "") || "55"; // Garante código do país limpo
     const numeroCompleto = `+${codigoPaisFormatado}${numeroFormatado}`;
 
-   
+
     //const numeroFormatado = whatsapp.replace(/[^0-9]/g, "");
     let mensagem = getGreeting(alunoNome || "Aluno");
     switch (tipoMensagem) {
@@ -487,7 +499,7 @@ const ControleDePresenca = () => {
     }
     console.log(`📩 Enviando mensagem para ${numeroCompleto}: ${mensagem}`);
     const url = `whatsapp://send?phone=${numeroCompleto}&text=${encodeURIComponent(mensagem)}`;
-    
+
     //console.log(`📩 Enviando mensagem: ${mensagem}`);
     //const url = `whatsapp://send?phone=${numeroFormatado}&text=${encodeURIComponent(mensagem)}`;
     Linking.openURL(url)
@@ -596,9 +608,16 @@ const ControleDePresenca = () => {
               }}
             />
           </View>
-          <TouchableOpacity style={globalStyles.addButton} onPress={adicionarAluno}>
-            <AntDesign name="plus" size={24} color="#ecf0f1" />
-          </TouchableOpacity>
+          <View style={{ position: "absolute", bottom: 1, right: 1, }}>
+            <TurmaZone zone={4} text="Você pode adicionar uma nova turma pressionando o botão mais." shape={'circle'} style={{
+              padding: 30, bottom: 0,
+              right: 10, marginLeft: 1
+            }} >
+              <TouchableOpacity ref={addRef} style={globalStyles.addButton} onPress={adicionarAluno}>
+                <AntDesign name="plus" size={24} color="#ecf0f1" />
+              </TouchableOpacity>
+            </TurmaZone>
+          </View>
           {/* Modal de detalhes do aluno */}
           <ModalDetalhesAluno
             aluno={alunoSelecionado}

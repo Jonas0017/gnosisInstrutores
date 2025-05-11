@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { getDoc, getDocs, setDoc, collection, doc, updateDoc } from "firebase/firestore";
-import { firestore } from "../firebaseConfig";
+import { firestore } from "../firebaseConfig.js";
 import { globalStyles } from "../styles/globalStyles"; // Importando o CSS
 import { recuperarDadosDemograficos } from "../utils/dadosDemograficos"; // Importando a função reutilizável
 import Loading from "../components/Loading"; // Importando o componente Loading

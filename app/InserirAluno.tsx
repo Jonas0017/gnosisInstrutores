@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { firestore } from "../firebaseConfig";
+import { firestore } from "../firebaseConfig.js";
 import { collection, getDocs, doc, setDoc, getDoc } from "firebase/firestore";
 import { globalStyles } from "../styles/globalStyles"; // Importando o CSS
 import Loading from "../components/Loading"; // Importando o componente Loading

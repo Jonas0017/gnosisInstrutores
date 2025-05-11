@@ -10,7 +10,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
-import { firestore } from "../firebaseConfig"; // Ajuste o caminho se necessário
+import { firestore } from "../firebaseConfig.js"; // Ajuste o caminho se necessário
 import { globalStyles } from "../styles/globalStyles";
 import Loading from "../components/Loading";
 import * as LocalAuthentication from "expo-local-authentication";

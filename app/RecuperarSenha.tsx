@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { collection, query, where, getDocs, updateDoc } from "firebase/firestore";
-import { firestore } from "../firebaseConfig"; // Certifique-se de que o Firebase Firestore está configurado
+import { firestore } from "../firebaseConfig.js"; // Certifique-se de que o Firebase Firestore está configurado
 import { globalStyles } from "../styles/globalStyles"; // Estilos globais (opcional)
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";

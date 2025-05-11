@@ -184,5 +184,5 @@ GoogleService-Info.plist
 firebase-debug.log
 
 # Bloquear arquivos do Firebase
-criarEstruturaFirebase.js
-firebaseConfig.js
+#criarEstruturaFirebase.js
+#firebaseConfig.js

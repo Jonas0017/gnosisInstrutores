@@ -14,6 +14,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { globalStyles } from "../styles/globalStyles";
 import { useRouter } from "expo-router";
 import Loading from "../components/Loading"; // Importando o componente Loading
+import { useLocalSearchParams } from "expo-router";
+import { TourGuideZone, useTourGuideController } from "rn-tourguide";
 
 const PerfilUsuario = () => {
   const [usuarios, setUsuarios] = useState<any[]>([]);
@@ -23,6 +25,7 @@ const PerfilUsuario = () => {
     useState(false);
   const [dadosDemograficos, setDadosDemograficos] = useState<any>(null);
   const [loading, setLoading] = useState(false); // Estado para mostrar o loading
+  const { tutorialEtapa } = useLocalSearchParams();
 
   const router = useRouter();
 
@@ -84,6 +87,31 @@ const PerfilUsuario = () => {
     carregarDadosDemograficos();
   }, []);
 
+  const {
+    start: startPerfil,
+    stop: stopPerfil,
+    canStart: canStartPerfil,
+    TourGuideZone: PerfilZone,
+  } = useTourGuideController("Perfil")
+  
+  useEffect(() => {
+    const iniciarTutorialPerfil = async () => {
+      const concluido = await AsyncStorage.getItem("tutorialPerfilCompleted")
+      const etapa = parseInt(await AsyncStorage.getItem("tutorialPerfilEtapa") ?? "1", 10)
+  
+      if (concluido !== "true" && canStartPerfil) {
+        console.log("👤 Iniciando tutorial PERFIL etapa:", etapa)
+        setTimeout(() => {
+          startPerfil()
+          setTimeout(() => startPerfil(etapa), 100)
+        }, 200)
+      }
+    }
+  
+    iniciarTutorialPerfil()
+  }, [canStartPerfil])
+  
+
   return (
     <View style={globalStyles.container}>
       <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5, marginLeft: 5 }}>
@@ -97,38 +125,43 @@ const PerfilUsuario = () => {
 
       {!loading && (
         <>
-          <FlatList
-            data={usuarios}
-            keyExtractor={(item) => item.key}
-            renderItem={({ item }) => (
-              <View>
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedUser(item);
-                    setModalPessoalVisible(true);
-                  }}
-                >
-                  <View style={globalStyles.itemTurmas}>
-                    <Text style={globalStyles.titleTurma}>Dados Pessoais</Text>
-                    <Text style={globalStyles.text}>Nome: {item.nome}</Text>
-                    <Text style={globalStyles.text}>CPF: {item.cpf}</Text>
-                    <Text style={globalStyles.text}>WhatsApp: {`${item.codigoPais} ${item.whatsapp}`}</Text>
-                  </View>
-                </TouchableOpacity>
+          <PerfilZone
+            zone={1}
+            text="Aqui você pode editar seus dados pessoais e demográficos caso seja necessário."
+            borderRadius={10}
+          >
+            <FlatList
+              data={usuarios}
+              keyExtractor={(item) => item.key}
+              renderItem={({ item }) => (
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSelectedUser(item);
+                      setModalPessoalVisible(true);
+                    }}
+                  >
+                    <View style={globalStyles.itemTurmas}>
+                      <Text style={globalStyles.titleTurma}>Dados Pessoais</Text>
+                      <Text style={globalStyles.text}>Nome: {item.nome}</Text>
+                      <Text style={globalStyles.text}>CPF: {item.cpf}</Text>
+                      <Text style={globalStyles.text}>WhatsApp: {`${item.codigoPais} ${item.whatsapp}`}</Text>
+                    </View>
+                  </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => setModalDemograficoVisible(true)}>
-                  <View style={globalStyles.itemTurmas}>
-                    <Text style={globalStyles.titleTurma}>Dados Demográficos</Text>
-                    <Text style={globalStyles.text}>País: {dadosDemograficos?.pais || "Carregando..."}</Text>
-                    <Text style={globalStyles.text}>Estado: {dadosDemograficos?.estado || "Carregando..."}</Text>
-                    <Text style={globalStyles.text}>Lumisial: {dadosDemograficos?.lumisial || "Carregando..."}</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            )}
-            ListEmptyComponent={<Text style={globalStyles.empty}>Nenhum usuário encontrado.</Text>}
-          />
-
+                  <TouchableOpacity onPress={() => setModalDemograficoVisible(true)}>
+                    <View style={globalStyles.itemTurmas}>
+                      <Text style={globalStyles.titleTurma}>Dados Demográficos</Text>
+                      <Text style={globalStyles.text}>País: {dadosDemograficos?.pais || "Carregando..."}</Text>
+                      <Text style={globalStyles.text}>Estado: {dadosDemograficos?.estado || "Carregando..."}</Text>
+                      <Text style={globalStyles.text}>Lumisial: {dadosDemograficos?.lumisial || "Carregando..."}</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )}
+              ListEmptyComponent={<Text style={globalStyles.empty}>Nenhum usuário encontrado.</Text>}
+            />
+          </PerfilZone>
           {/* Modal para Dados Pessoais */}
           {modalPessoalVisible && selectedUser && (
             <Modal

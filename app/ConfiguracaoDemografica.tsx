@@ -16,7 +16,7 @@ import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { collection, getDocs, DocumentData } from "firebase/firestore";
-import { firestore } from "../firebaseConfig";
+import { firestore } from "../firebaseConfig.js";
 import { globalStyles } from "../styles/globalStyles"; // Importando o CSS
 import Loading from "../components/Loading"; // Importando o componente Loading
 

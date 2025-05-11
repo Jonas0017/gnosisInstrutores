@@ -1,50 +1,78 @@
-# Welcome to your Expo app 👋
+# 🎓 Gnosis Instrutores
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+![Plataforma](https://img.shields.io/badge/plataforma-React%20Native-blue)
+![Licença](https://img.shields.io/badge/licença-CC%20BY--ND%204.0-lightgrey)
 
-## Get started
+## 📖 Sobre o Projeto
 
-1. Install dependencies
+O **Gnosis Instrutores** é um aplicativo desenvolvido para auxiliar no **controle de presença** em palestras e eventos do Instituto Gnosis Brasil. O app permite que instrutores gerenciem suas turmas, registrem a frequência dos alunos e organizem melhor a participação nos encontros.
 
-   ```bash
-   npm install
-   ```
+## 🚀 Tecnologias Utilizadas
 
-2. Start the app
+Este projeto foi desenvolvido com as seguintes tecnologias:
 
-   ```bash
-    npx expo start
-   ```
+- ⚛️ **React Native** (com Expo)
+- 🔥 **Firebase** (Autenticação & Firestore)
+- 🎨 **Styled Components**
+- 🔗 **React Navigation**
+- 💾 **Async Storage**
 
-In the output, you'll find options to open the app in a
+## 📷 Capturas de Tela *(opcional)*
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Adicione algumas imagens do app aqui para demonstrar como ele funciona. 
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📂 Estrutura do Projeto
 
-## Get a fresh project
+gnosisInstrutores/ │-- app/ │ ├── ConsultarTurmas.tsx │ ├── ControleDePresenca.tsx │ ├── InserirAluno.tsx │ ├── InserirTurma.tsx │ ├── index.tsx │-- components/ │ ├── Button.tsx │ ├── Header.tsx │-- assets/ │ ├── images/ │ ├── animations/ │-- utils/ │-- styles/ │-- package.json │-- App.tsx
 
-When you're ready, run:
+bash
+Copiar código
 
-```bash
-npm run reset-project
-```
+## 📦 Como Instalar e Rodar o Projeto
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Para rodar este projeto localmente, siga os passos abaixo:
 
-## Learn more
+### 1️⃣ Clone este repositório:
+```sh
+git clone https://github.com/Jonas0017/gnosisInstrutores.git
+cd gnosisInstrutores
+2️⃣ Instale as dependências:
+sh
+Copiar código
+npm install
+# ou
+yarn install
+3️⃣ Configure o Firebase (importante!):
+Crie um arquivo .env e adicione as credenciais do Firebase (não compartilhadas no repositório).
 
-To learn more about developing your project with Expo, look at the following resources:
+4️⃣ Rode o app no Expo:
+sh
+Copiar código
+expo start
+🚧 Recursos em Desenvolvimento
+ Melhorar interface de usuário
+ Implementar sistema de QR Code para presença
+ Criar dashboard de estatísticas
+🔒 Licença
+Este projeto está licenciado sob a Creative Commons Attribution-NoDerivatives 4.0.
+🔗 Mais informações sobre a licença
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+📩 Contato & Contribuições
+👤 Desenvolvedor: Jonas0017
+📧 E-mail: seuemail@exemplo.com
+💬 Sugestões e melhorias? Fique à vontade para abrir uma issue ou enviar um pull request! 🚀
 
-## Join the community
+yaml
+Copiar código
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### **📌 Explicação do README**
+✔ Título com ícones  
+✔ Descrição clara do projeto  
+✔ Tecnologias usadas  
+✔ Estrutura do projeto  
+✔ Passo a passo para instalação  
+✔ Lista de melhorias futuras  
+✔ Contato e contribuição

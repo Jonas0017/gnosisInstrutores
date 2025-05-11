@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { firestore } from "../firebaseConfig"; // Certifique-se de ajustar o caminho
+import { firestore } from "../firebaseConfig.js"; // Certifique-se de ajustar o caminho
 import { AntDesign, MaterialIcons } from "@expo/vector-icons"; // Ícone para o botão "+"
 import { globalStyles } from "../styles/globalStyles"; // Importando o CSS
 import { recuperarDadosDemograficos } from "../utils/dadosDemograficos"; // Importando a função reutilizável

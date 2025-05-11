@@ -16,7 +16,7 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import { firestore } from "../firebaseConfig";
+import { firestore } from "../firebaseConfig.js";
 import {
   GestureHandlerRootView,
   PanGestureHandler,
