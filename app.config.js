@@ -32,7 +32,7 @@ export default {
         {
           android: {
             kotlinVersion: "1.9.10",
-            gradlePluginVersion: "8.0.2",
+            gradlePluginVersion: "7.4.1",
             compileSdkVersion: 34,
             targetSdkVersion: 34,
             minSdkVersion: 23
